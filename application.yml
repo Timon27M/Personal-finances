@@ -1,0 +1,56 @@
+#spring:
+#  application:
+#    name: personal-finance-manager
+#
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/personal_finance_db
+#    username: postgres
+#    password: postgres
+#    driver-class-name: org.postgresql.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#    show-sql: true
+#
+#  jackson:
+#    serialization:
+#      write-dates-as-timestamps: false
+#
+#app:
+#  jwt:
+#    secret: "my-super-secret-key-for-jwt-that-is-very-long-and-secure-12345"
+#    expiration-ms: 86400000  # 24 часа
+#
+#server:
+#  port: 8080
+#  servlet:
+#    context-path: /api
+#
+#logging:
+#  level:
+#    com.personalfinance: DEBUG
+
+spring:
+  application:
+    name: personal-finance-manager
+
+  # Временно отключаем JPA
+  jpa:
+    enabled: false
+
+  datasource:
+    enabled: false
+
+  # Отключаем security чтобы не было пароля в консоли
+  security:
+    enabled: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /  # Убираем /api для простоты
