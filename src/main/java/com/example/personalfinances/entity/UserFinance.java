@@ -3,18 +3,22 @@ package com.example.personalfinances.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_finances")
 public class UserFinance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+    @Column(name = "user_id", updatable = false, nullable = false, columnDefinition = "UUID")
+    private UUID userId;
 
     @Column(name = "user_name", unique = true, nullable = false)
-    @NotBlank(message = "Имя пользователя обязательно")
+    @NotBlank(message = "Имя пользователя обзаятельно")
     private String userName;
 
     @Column(name = "balance", nullable = false)
@@ -30,12 +34,12 @@ public class UserFinance {
     }
 
     // Геттеры и сеттеры
-    public Long getId() {
-        return id;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getUserName() {

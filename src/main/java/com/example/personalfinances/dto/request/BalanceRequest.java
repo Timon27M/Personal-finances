@@ -1,19 +1,19 @@
 package com.example.personalfinances.dto.request;
 
 public class BalanceRequest {
-    private String name;
+    private String userName;
 
     public BalanceRequest() {}
 
-    public BalanceRequest(String name) {
-        this.name = name;
+    public BalanceRequest(String userName) {
+        this.userName = userName;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String name) {
+        this.userName = userName;
     }
 }

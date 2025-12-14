@@ -20,13 +20,13 @@ public class FinanceController {
 
     @PostMapping("/balance")
     public ResponseEntity<BalanceResponse> getBalance(@Valid @RequestBody BalanceRequest request) {
-        if (request.getName() == null || request.getName().trim().isEmpty()) {
+        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
             return ResponseEntity.badRequest().body(
-                    new BalanceResponse(null, null, "Имя пользователя обязательно", "error")
+                    new BalanceResponse(null, null, null, "Имя пользователя обязательно", "error")
             );
         }
 
-        BalanceResponse response = userFinanceService.getOrCreateUserBalance(request.getName());
+        BalanceResponse response = userFinanceService.getOrCreateUserBalance(request.getUserName());
         return ResponseEntity.ok(response);
     }
 

@@ -24,6 +24,7 @@ public class UserFinanceService {
         if (existingUser.isPresent()) {
             UserFinance user = existingUser.get();
             return new BalanceResponse(
+                    user.getUserId(),
                     user.getUserName(),
                     user.getBalance(),
                     "Баланс пользователя найден",
@@ -35,6 +36,7 @@ public class UserFinanceService {
             userFinanceRepository.save(newUser);
 
             return new BalanceResponse(
+                    newUser.getUserId(),
                     userName,
                     BigDecimal.ZERO,
                     "Пользователь создан с начальным балансом 0",
@@ -52,6 +54,7 @@ public class UserFinanceService {
         userFinanceRepository.save(user);
 
         return new BalanceResponse(
+                user.getUserId(),
                 userName,
                 newBalance,
                 "Баланс обновлен",
