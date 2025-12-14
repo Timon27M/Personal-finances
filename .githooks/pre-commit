@@ -43,6 +43,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
 # 6. Сборка Docker image (аналог docker-build job)
 #echo "🐳 Building Docker image..."
 #
