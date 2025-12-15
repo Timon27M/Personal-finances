@@ -1,7 +1,7 @@
 package com.example.personalfinances.service;
 
 import com.example.personalfinances.dto.response.BalanceResponse;
-import com.example.personalfinances.entity.UserFinance;
+import com.example.personalfinances.entity.User;
 import com.example.personalfinances.repository.UserFinanceRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -19,10 +19,10 @@ public class UserFinanceService {
 
   @Transactional
   public BalanceResponse getOrCreateUserBalance(String userName) {
-    Optional<UserFinance> existingUser = userFinanceRepository.findByUserName(userName);
+    Optional<User> existingUser = userFinanceRepository.findByUserName(userName);
 
     if (existingUser.isPresent()) {
-      UserFinance user = existingUser.get();
+      User user = existingUser.get();
       return new BalanceResponse(
           user.getUserId(),
           user.getUserName(),
@@ -31,7 +31,7 @@ public class UserFinanceService {
           "success");
     } else {
       // Создаем нового пользователя с начальным балансом 0
-      UserFinance newUser = new UserFinance(userName, BigDecimal.ZERO);
+      User newUser = new User(userName, BigDecimal.ZERO);
       userFinanceRepository.save(newUser);
 
       return new BalanceResponse(
@@ -45,7 +45,7 @@ public class UserFinanceService {
 
   @Transactional
   public BalanceResponse updateBalance(String userName, BigDecimal newBalance) {
-    UserFinance user =
+    User user =
         userFinanceRepository
             .findByUserName(userName)
             .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
