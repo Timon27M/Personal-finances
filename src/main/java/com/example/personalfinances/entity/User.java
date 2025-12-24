@@ -26,13 +26,8 @@ public class User {
   @Column(name = "created_at", nullable = false)
   private LocalDateTime createdAt;
 
-  //  @OneToOne(
-  //          mappedBy = "user",
-  //          cascade = CascadeType.ALL,
-  //          fetch = FetchType.LAZY,
-  //          optional = false
-  //  )
-  //  private Wallet wallet;
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+  private Wallet wallet;
 
   protected User() {}
 
@@ -58,12 +53,12 @@ public class User {
     return createdAt;
   }
 
-  //  public Wallet getWallet() {
-  //    return wallet;
-  //  }
-  //
-  //  public void setWallet(Wallet wallet) {
-  //    this.wallet = wallet;
-  //    wallet.setUser(this);
-  //  }
+  public Wallet getWallet() {
+    return wallet;
+  }
+
+  public void setWallet(Wallet wallet) {
+    this.wallet = wallet;
+    wallet.setUser(this);
+  }
 }
