@@ -10,13 +10,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-## 2. Проверка линтера (Checkstyle)
-#echo "🔍 Running linter (Checkstyle)..."
-#./mvnw checkstyle:check
-#if [ $? -ne 0 ]; then
-#    echo "❌ Checkstyle failed"
-#    exit 1
-#fi
+# 2. Проверка линтера (Checkstyle)
+echo "🔍 Running linter (Checkstyle)..."
+./mvnw checkstyle:check
+if [ $? -ne 0 ]; then
+    echo "❌ Checkstyle failed"
+    exit 1
+fi
 #
 ## 3. Запуск тестов
 #echo "🧪 Running tests..."
