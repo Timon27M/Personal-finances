@@ -16,6 +16,7 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
   @Transactional
   public User register(RegisterRequest registerRequest) {
@@ -34,7 +35,7 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public User login(LoginRequest loginRequest) {
+  public String login(LoginRequest loginRequest) {
     if (!userRepository.existsByLogin(loginRequest.getLogin())) {
       throw new IllegalArgumentException("Login does not exist");
     }
@@ -49,6 +50,6 @@ public class AuthService {
       throw new IllegalArgumentException("Invalid password");
     }
 
-    return user;
+    return jwtService.generateToken(user);
   }
 }
