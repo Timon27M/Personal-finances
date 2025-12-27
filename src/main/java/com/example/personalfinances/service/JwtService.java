@@ -19,7 +19,7 @@ public class JwtService {
 
   // dev версия для удобства тестирования
   Dotenv dotenv = Dotenv.configure().load();
-  private String key = dotenv.get("JWT_SECRET");
+  private String key = dotenv.get("JWT_SECRET", "default_secret");
   private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
 
   private final long expirationTime = 1000 * 60 * 60 * 24;
