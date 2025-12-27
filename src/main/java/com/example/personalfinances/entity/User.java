@@ -37,7 +37,7 @@ public class User {
     this.createdAt = LocalDateTime.now();
   }
 
-  public UUID getId() {
+  public UUID getUserId() {
     return userId;
   }
 

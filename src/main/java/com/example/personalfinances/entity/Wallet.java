@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -29,6 +30,7 @@ public class Wallet {
       foreignKey = @ForeignKey(name = "fk_wallet_user"))
   private User user;
 
+  @Getter
   @Column(name = "balance", nullable = false, precision = 19, scale = 2)
   private BigDecimal balance;
 
@@ -47,10 +49,6 @@ public class Wallet {
     this.user = user;
     this.balance = BigDecimal.ZERO;
     this.created_at = LocalDateTime.now();
-  }
-
-  public BigDecimal getBalance() {
-    return balance;
   }
 
   public void increaseBalance(BigDecimal amount) {
