@@ -72,41 +72,33 @@ jobs:
       - name: Verify Java version compatibility
         run: mvn compiler:testCompile "-Dmaven.compiler.release=21"
 
-#  docker-build:
-#    name: "Build & Push Docker Image"
-#    runs-on: ubuntu-latest
-#    needs: build
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: Log in to GitHub Container Registry
-#        uses: docker/login-action@v3
-#        with:
-#          registry: ghcr.io
-#          username: ${{ github.actor }}
-#          password: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Prepare image name
-#        id: prep
-#        run: |
-#          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}/shortened-links:latest"
-#          echo "image=$IMAGE" >> $GITHUB_OUTPUT
-#
-#      - name: Build Docker image
-#        run: |
-#          docker build -t ${{ steps.prep.outputs.image }} .
-#
-#      - name: Push Docker image
-#        run: |
-#          docker push ${{ steps.prep.outputs.image }}
+  docker-build:
+    name: "Simple Docker Build"
+    runs-on: ubuntu-latest
+    needs: [ test, build ]  # Ждем успешных тестов и сборки
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t personal-finances-app .
+
+      - name: Test Docker image runs
+        run: |
+          # Проверяем что образ создан
+          docker image inspect personal-finances-app
+          
+          # Проверяем что в образе есть JAR
+          docker run --rm --entrypoint ls personal-finances-app /app | grep .jar
+          
+          echo "✅ Docker build successful!"
 
   java-ci-check:
     name: "Java CI Check"
     runs-on: ubuntu-latest
-    needs: [ Check-linter, test, build ]
+    needs: [ Check-linter, test, build, docker-build ]
     steps:
       - name: All checks completed
         run: echo "All Java CI checks passed successfully!"
