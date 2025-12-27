@@ -94,7 +94,6 @@ jobs:
           docker run --rm --entrypoint ls personal-finances-app /app | grep .jar
           
           echo "✅ Docker build successful!"
-          echo "⚠️  Note: Application requires .env file for JWT configuration"
 
   java-ci-check:
     name: "Java CI Check"
