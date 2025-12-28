@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -20,12 +22,15 @@ import org.hibernate.type.SqlTypes;
     })
 public class Category {
 
+  @Getter
   @Id
   @UuidGenerator(style = UuidGenerator.Style.RANDOM)
   @JdbcTypeCode(SqlTypes.UUID)
   @Column(name = "category_id", nullable = false, updatable = false)
   private UUID categoryId;
 
+  @Setter
+  @Getter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
       name = "wallet_id",
@@ -33,25 +38,21 @@ public class Category {
       foreignKey = @ForeignKey(name = "fk_category_wallet"))
   private Wallet wallet;
 
+  @Getter
   @Column(name = "category_name", nullable = false, length = 100)
   private String categoryName;
 
+  @Getter
   @Enumerated(EnumType.STRING)
   @Column(name = "category_type", nullable = false, length = 10)
   private CategoryType categoryType;
 
+  @Getter
   @Column(name = "created_at", nullable = false)
   private LocalDateTime createdAt;
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactions = new ArrayList<>();
-
-  @OneToOne(
-      mappedBy = "category",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private Budget budget;
 
   protected Category() {}
 
@@ -65,38 +66,5 @@ public class Category {
   public void addTransaction(Transaction transaction) {
     transactions.add(transaction);
     transaction.setCategory(this);
-  }
-
-  public void setBudget(Budget budget) {
-    this.budget = budget;
-    budget.setCategory(this);
-  }
-
-  public UUID getCategoryId() {
-    return categoryId;
-  }
-
-  public Wallet getWallet() {
-    return wallet;
-  }
-
-  public void setWallet(Wallet wallet) {
-    this.wallet = wallet;
-  }
-
-  public String getCategoryName() {
-    return categoryName;
-  }
-
-  public CategoryType getCategoryType() {
-    return categoryType;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public Budget getBudget() {
-    return budget;
   }
 }

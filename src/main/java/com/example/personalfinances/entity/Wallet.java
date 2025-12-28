@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -15,12 +16,15 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "wallets")
 public class Wallet {
 
+  @Getter
   @Id
   @UuidGenerator(style = UuidGenerator.Style.RANDOM)
   @JdbcTypeCode(SqlTypes.UUID)
   @Column(name = "wallet_id", updatable = false, nullable = false)
   private UUID walletId;
 
+  @Setter
+  @Getter
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "user_id",
@@ -30,10 +34,19 @@ public class Wallet {
       foreignKey = @ForeignKey(name = "fk_wallet_user"))
   private User user;
 
+  @OneToOne(
+      mappedBy = "wallet",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      optional = false)
+  private BudgetWallet budget;
+
   @Getter
+  @Setter
   @Column(name = "balance", nullable = false, precision = 19, scale = 2)
   private BigDecimal balance;
 
+  @Getter
   @Column(name = "created_at", nullable = false)
   private LocalDateTime created_at;
 
@@ -47,8 +60,11 @@ public class Wallet {
 
   public Wallet(User user) {
     this.user = user;
+    user.setWallet(this);
     this.balance = BigDecimal.ZERO;
     this.created_at = LocalDateTime.now();
+
+    this.budget = new BudgetWallet(this);
   }
 
   public void increaseBalance(BigDecimal amount) {
@@ -57,22 +73,6 @@ public class Wallet {
 
   public void decreaseBalance(BigDecimal amount) {
     this.balance = this.balance.subtract(amount);
-  }
-
-  public UUID getWalletId() {
-    return walletId;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public LocalDateTime getCreated_at() {
-    return created_at;
   }
 
   public void addTransaction(Transaction transaction) {
