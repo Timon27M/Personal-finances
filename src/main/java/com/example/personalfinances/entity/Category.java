@@ -2,6 +2,7 @@ package com.example.personalfinances.entity;
 
 import com.example.personalfinances.entity.enums.CategoryType;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +52,17 @@ public class Category {
   @Column(name = "created_at", nullable = false)
   private LocalDateTime createdAt;
 
+  @Getter
+  @Setter
+  @Column(name = "balance", nullable = false)
+  private BigDecimal balance;
+
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactions = new ArrayList<>();
+
+  @Setter
+  @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+  private BudgetCategory budget;
 
   protected Category() {}
 
@@ -61,6 +71,9 @@ public class Category {
     this.categoryName = categoryName;
     this.categoryType = type;
     this.createdAt = LocalDateTime.now();
+    this.balance = BigDecimal.ZERO;
+
+    this.budget = new BudgetCategory(this);
   }
 
   public void addTransaction(Transaction transaction) {
