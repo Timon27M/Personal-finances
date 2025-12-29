@@ -41,6 +41,8 @@ public class BudgetWallet {
   @Column(name = "expense", nullable = false, precision = 19, scale = 2)
   private BigDecimal expense;
 
+  @Getter
+  @Setter
   @Column(name = "limit_amount", nullable = true)
   private BigDecimal limitAmount;
 
@@ -54,5 +56,10 @@ public class BudgetWallet {
     this.income = BigDecimal.ZERO;
     this.expense = BigDecimal.ZERO;
     this.createdAt = LocalDateTime.now();
+  }
+
+  public BigDecimal addIncome(BigDecimal amount) {
+    this.income = income.add(amount);
+    return income;
   }
 }
