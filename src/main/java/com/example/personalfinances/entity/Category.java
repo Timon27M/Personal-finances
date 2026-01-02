@@ -1,10 +1,11 @@
 package com.example.personalfinances.entity;
 
 import com.example.personalfinances.entity.budgetCategory.AbstractBudgetCategory;
-import com.example.personalfinances.entity.budgetCategory.BudgetCategoryExpose;
+import com.example.personalfinances.entity.budgetCategory.BudgetCategoryExpense;
 import com.example.personalfinances.entity.budgetCategory.BudgetCategoryIncome;
 import com.example.personalfinances.entity.enums.TransactionType;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,20 @@ public class Category {
 
     this.budget =
         type == TransactionType.EXPENSE
-            ? new BudgetCategoryExpose(this)
+            ? new BudgetCategoryExpense(this)
+            : new BudgetCategoryIncome(this);
+  }
+
+  public Category(
+      Wallet wallet, String categoryName, TransactionType type, BigDecimal limitAmount) {
+    this.wallet = wallet;
+    this.categoryName = categoryName;
+    this.categoryType = type;
+    this.createdAt = LocalDateTime.now();
+
+    this.budget =
+        type == TransactionType.EXPENSE
+            ? new BudgetCategoryExpense(this, limitAmount)
             : new BudgetCategoryIncome(this);
   }
 

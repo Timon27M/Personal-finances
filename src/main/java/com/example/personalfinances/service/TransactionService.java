@@ -1,16 +1,16 @@
 package com.example.personalfinances.service;
 
-import com.example.personalfinances.components.RequestGetterComponent;
 import com.example.personalfinances.entity.Category;
 import com.example.personalfinances.entity.Transaction;
 import com.example.personalfinances.entity.Wallet;
 import com.example.personalfinances.entity.budgetCategory.AbstractBudgetCategory;
+import com.example.personalfinances.entity.budgetCategory.BudgetCategoryExpense;
 import com.example.personalfinances.entity.budgetCategory.BudgetCategoryIncome;
 import com.example.personalfinances.entity.enums.TransactionType;
 import com.example.personalfinances.repository.CategoryRepository;
 import com.example.personalfinances.repository.TransactionRepository;
-import com.example.personalfinances.repository.UserRepository;
 import com.example.personalfinances.repository.WalletRepository;
+import com.example.personalfinances.utils.SearchCurrentUserData;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -25,11 +25,11 @@ public class TransactionService {
   private final TransactionRepository transactionRepository;
   private final WalletRepository walletRepository;
   private final CategoryRepository categoryRepository;
-  private final UserRepository userRepository;
-  private final RequestGetterComponent requestGetterComponent;
+  private final SearchCurrentUserData searchCurrentUserData;
+  private final WalletService walletService;
 
   public Transaction addIncome(String categoryName, BigDecimal amount) {
-    Wallet wallet = getWallet();
+    Wallet wallet = searchCurrentUserData.getWallet();
     UUID walletId = wallet.getWalletId();
     Category category;
 
@@ -45,7 +45,9 @@ public class TransactionService {
     AbstractBudgetCategory budget = category.getBudget();
     if (!(budget instanceof BudgetCategoryIncome)) {
       throw new IllegalStateException(
-          "Category " + categoryName + " has wrong budget type for income transaction");
+          "Категория "
+              + categoryName
+              + " имеет неправильный тип бюджета для транзакции поступления.");
     }
     BudgetCategoryIncome incomeBudget = (BudgetCategoryIncome) budget;
 
@@ -59,25 +61,56 @@ public class TransactionService {
     return transactionRepository.save(transaction);
   }
 
-  @Transactional(readOnly = true)
-  public Wallet getByUserId(UUID userId) {
-    return walletRepository
-        .findByUserUserId(userId)
-        .orElseThrow(() -> new EntityNotFoundException("Wallet not found for user13 " + userId));
-  }
+  public Transaction addExpense(String categoryName, BigDecimal amount, BigDecimal limitAmount) {
+    Wallet wallet = searchCurrentUserData.getWallet();
+    if (wallet.getBudget().getLimitAmount() != null
+        && wallet
+                .getBudget()
+                .getLimitAmount()
+                .compareTo(amount.add(wallet.getBudget().getExpense()))
+            < 0) {
+      throw new IllegalStateException("Лимит кошелька превышен!");
+    }
+    UUID walletId = wallet.getWalletId();
+    Category category;
 
-  public Wallet getWallet() {
-    UUID userId = requestGetterComponent.getCurrentUserId();
-    if (userRepository.existsById(userId)) {
-      return getByUserId(userId);
+    if (categoryRepository.existsByWalletWalletIdAndCategoryNameAndCategoryType(
+        walletId, categoryName, TransactionType.EXPENSE)) {
+      category = getCategory(walletId, categoryName, TransactionType.EXPENSE);
+    } else {
+      if (limitAmount != null && limitAmount.compareTo(amount) < 0) {
+        throw new IllegalStateException("limit не может быть меньше amount");
+      }
+      category = new Category(wallet, categoryName, TransactionType.EXPENSE, limitAmount);
     }
 
-    throw new EntityNotFoundException("Not found for user " + userId);
+    Transaction transaction = new Transaction(wallet, category, amount, TransactionType.EXPENSE);
+
+    AbstractBudgetCategory budget = category.getBudget();
+    if (!(budget instanceof BudgetCategoryExpense)) {
+      throw new IllegalStateException(
+          "Категория "
+              + categoryName
+              + " имеет неправильный тип бюджета для транзакции поступления.");
+    }
+    BudgetCategoryExpense expenseBudget = (BudgetCategoryExpense) budget;
+
+    if (expenseBudget.getLimitAmount() != null
+        && expenseBudget.getLimitAmount().compareTo(amount.add(expenseBudget.getExpense())) < 0) {
+      throw new IllegalStateException("Лимит на данную категорию превышен!");
+    }
+
+    expenseBudget.addExpense(amount);
+
+    walletService.decreaseBalance(amount);
+    categoryRepository.save(category);
+
+    return transactionRepository.save(transaction);
   }
 
   private Category getCategory(UUID walletId, String categoryName, TransactionType type) {
     return categoryRepository
         .findByWalletWalletIdAndCategoryNameAndCategoryType(walletId, categoryName, type)
-        .orElseThrow(() -> new RuntimeException("Category not found"));
+        .orElseThrow(() -> new EntityNotFoundException("Категория не найдена"));
   }
 }

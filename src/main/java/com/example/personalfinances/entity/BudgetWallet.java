@@ -62,4 +62,9 @@ public class BudgetWallet {
     this.income = income.add(amount);
     return income;
   }
+
+  public BigDecimal addExpense(BigDecimal amount) {
+    this.expense = expense.add(amount);
+    return expense;
+  }
 }

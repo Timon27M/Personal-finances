@@ -3,12 +3,14 @@ package com.example.personalfinances.entity.budgetCategory;
 import com.example.personalfinances.entity.Category;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "budget_category_income")
 public class BudgetCategoryIncome extends AbstractBudgetCategory {
+  private LocalDateTime createdAt;
 
   @Getter
   @Setter
@@ -19,6 +21,7 @@ public class BudgetCategoryIncome extends AbstractBudgetCategory {
 
   public BudgetCategoryIncome(Category category) {
     super(category);
+
     this.income = BigDecimal.ZERO;
   }
 
