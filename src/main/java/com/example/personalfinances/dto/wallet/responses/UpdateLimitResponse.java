@@ -1,12 +1,11 @@
 package com.example.personalfinances.dto.wallet.responses;
 
-import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class BalanceResponse {
+public class UpdateLimitResponse {
   private final int status = 200;
-  private final BigDecimal balance;
+  private final String message;
 }

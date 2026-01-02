@@ -1,7 +1,11 @@
 package com.example.personalfinances.entity;
 
-import com.example.personalfinances.entity.enums.CategoryType;
+import com.example.personalfinances.entity.budgetCategory.AbstractBudgetCategory;
+import com.example.personalfinances.entity.budgetCategory.BudgetCategoryExpense;
+import com.example.personalfinances.entity.budgetCategory.BudgetCategoryIncome;
+import com.example.personalfinances.entity.enums.TransactionType;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +49,7 @@ public class Category {
   @Getter
   @Enumerated(EnumType.STRING)
   @Column(name = "category_type", nullable = false, length = 10)
-  private CategoryType categoryType;
+  private TransactionType categoryType;
 
   @Getter
   @Column(name = "created_at", nullable = false)
@@ -54,13 +58,36 @@ public class Category {
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactions = new ArrayList<>();
 
+  @Setter
+  @Getter
+  @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+  private AbstractBudgetCategory budget;
+
   protected Category() {}
 
-  public Category(Wallet wallet, String categoryName, CategoryType type) {
+  public Category(Wallet wallet, String categoryName, TransactionType type) {
     this.wallet = wallet;
     this.categoryName = categoryName;
     this.categoryType = type;
     this.createdAt = LocalDateTime.now();
+
+    this.budget =
+        type == TransactionType.EXPENSE
+            ? new BudgetCategoryExpense(this)
+            : new BudgetCategoryIncome(this);
+  }
+
+  public Category(
+      Wallet wallet, String categoryName, TransactionType type, BigDecimal limitAmount) {
+    this.wallet = wallet;
+    this.categoryName = categoryName;
+    this.categoryType = type;
+    this.createdAt = LocalDateTime.now();
+
+    this.budget =
+        type == TransactionType.EXPENSE
+            ? new BudgetCategoryExpense(this, limitAmount)
+            : new BudgetCategoryIncome(this);
   }
 
   public void addTransaction(Transaction transaction) {

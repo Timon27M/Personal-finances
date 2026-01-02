@@ -1,6 +1,6 @@
 package com.example.personalfinances.entity.enums;
 
-public enum CategoryType {
+public enum TransactionType {
   INCOME,
   EXPENSE
 }

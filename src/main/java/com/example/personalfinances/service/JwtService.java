@@ -3,10 +3,11 @@ package com.example.personalfinances.service;
 import com.example.personalfinances.entity.User;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.ServletException;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.SecretKey;
@@ -45,11 +46,11 @@ public class JwtService {
     return UUID.fromString(subject);
   }
 
-  public boolean isTokenValid(String token) {
+  public boolean isTokenValid(String token) throws ServletException {
     try {
       Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
       return true;
-    } catch (ExpiredJwtException e) {
+    } catch (MalformedJwtException e) {
       return false;
     }
   }

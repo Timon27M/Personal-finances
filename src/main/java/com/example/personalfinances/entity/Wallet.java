@@ -34,6 +34,8 @@ public class Wallet {
       foreignKey = @ForeignKey(name = "fk_wallet_user"))
   private User user;
 
+  @Getter
+  @Setter
   @OneToOne(
       mappedBy = "wallet",
       cascade = CascadeType.ALL,
