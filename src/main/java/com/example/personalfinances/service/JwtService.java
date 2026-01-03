@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.ServletException;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.SecretKey;
@@ -15,10 +14,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
-  // prod версия
-  // private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
-
-  // dev версия для удобства тестирования
   Dotenv dotenv = Dotenv.configure().load();
   private String key = dotenv.get("JWT_SECRET", "default_secret");
   private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
@@ -46,7 +41,7 @@ public class JwtService {
     return UUID.fromString(subject);
   }
 
-  public boolean isTokenValid(String token) throws ServletException {
+  public boolean isTokenValid(String token) {
     try {
       Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
       return true;

@@ -27,7 +27,7 @@ public class AuthController {
       return ResponseEntity.ok().body(new UserResponse(user.getUserId(), user.getLogin()));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest()
-          .body(Map.of("error", "USER_ALREADY_EXISTS", "message", e.getMessage()));
+          .body(Map.of("error", "USER_ALREADY_EXISTS", "message", e.getMessage(), "статус", 403));
     }
   }
 
@@ -38,7 +38,7 @@ public class AuthController {
       return ResponseEntity.ok(new LoginResponse(token));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest()
-          .body(Map.of("error", "USER_ALREADY_EXISTS", "message", e.getMessage()));
+          .body(Map.of("error", "USER_ALREADY_EXISTS", "message", e.getMessage(), "статус", 403));
     }
   }
 
@@ -47,7 +47,7 @@ public class AuthController {
     User user =
         userRepository
             .findByLogin(request.getLogin())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid login"));
+            .orElseThrow(() -> new IllegalArgumentException("Неверный логин"));
 
     return ResponseEntity.ok().body(new UserResponse(user.getUserId(), user.getLogin()));
   }

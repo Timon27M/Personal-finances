@@ -37,17 +37,17 @@ public class AuthService {
   @Transactional(readOnly = true)
   public String login(LoginRequest loginRequest) {
     if (!userRepository.existsByLogin(loginRequest.getLogin())) {
-      throw new IllegalArgumentException("Login does not exist");
+      throw new IllegalArgumentException("Логин не найден");
     }
 
     User user =
         userRepository
             .findByLogin(loginRequest.getLogin())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid login"));
+            .orElseThrow(() -> new IllegalArgumentException("Неверный логин"));
     ;
 
     if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
-      throw new IllegalArgumentException("Invalid password");
+      throw new IllegalArgumentException("Неверный пароль");
     }
 
     return jwtService.generateToken(user);
