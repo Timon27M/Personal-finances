@@ -41,7 +41,7 @@ public class WalletController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/wallet-limit-amount")
+  @PostMapping("/limit-amount/wallet")
   public ResponseEntity<DefaultSuccessResponse> limitAmount(
       @RequestBody UpdateLimitRequest request) {
     String message = walletService.addLimitAmount(request.getLimitAmount());
@@ -49,7 +49,7 @@ public class WalletController {
     return ResponseEntity.ok().body(new DefaultSuccessResponse(message));
   }
 
-  @PostMapping("/category-limit-amount")
+  @PostMapping("/limit-amount/category")
   public ResponseEntity<DefaultSuccessResponse> limitAmountCategory(
       @RequestBody UpdateCategoryLimitAmount request) {
     String message =

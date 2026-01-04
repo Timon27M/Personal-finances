@@ -7,6 +7,8 @@ import com.example.personalfinances.entity.enums.TransactionType;
 import com.example.personalfinances.repository.TransactionRepository;
 import com.example.personalfinances.utils.SearchCurrentUserData;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +53,10 @@ public class TransactionService {
     walletService.decreaseBalance(amount);
 
     transactionRepository.save(transaction);
+  }
+
+  public List<Transaction> getAllTransactions() {
+    UUID walletId = searchCurrentUserData.getWallet().getWalletId();
+    return transactionRepository.findByWalletWalletId(walletId);
   }
 }
