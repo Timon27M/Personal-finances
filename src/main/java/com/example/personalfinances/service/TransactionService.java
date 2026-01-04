@@ -5,7 +5,6 @@ import com.example.personalfinances.entity.Transaction;
 import com.example.personalfinances.entity.Wallet;
 import com.example.personalfinances.entity.enums.TransactionType;
 import com.example.personalfinances.repository.TransactionRepository;
-import com.example.personalfinances.utils.SearchCurrentUserData;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -18,24 +17,35 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransactionService {
   private final TransactionRepository transactionRepository;
-  private final SearchCurrentUserData searchCurrentUserData;
   private final CategoryService categoryService;
   private final WalletService walletService;
 
-  public void addIncome(String categoryName, BigDecimal amount) {
-    Wallet wallet = searchCurrentUserData.getWallet();
+  private final String categoryNameTransfer = "Перевод";
+
+  public void addIncome(Wallet wallet, String categoryName, BigDecimal amount) {
     Category category = categoryService.findOrCreateIncomeCategory(wallet, categoryName);
 
     Transaction transaction = new Transaction(wallet, category, amount, TransactionType.INCOME);
 
     categoryService.addIncomeCategory(category, categoryName, amount);
-    walletService.increaseBalance(amount);
+    walletService.increaseBalance(wallet, amount);
 
     transactionRepository.save(transaction);
   }
 
+  public void addIncomeTransfer(String categoryName, BigDecimal amount, String login) {
+    Wallet wallet = walletService.getWalletByLogin(login);
+    addIncome(wallet, categoryName, amount);
+  }
+
+  public void addIncomeCurrentWallet(String categoryName, BigDecimal amount) {
+    Wallet wallet = walletService.getCurrentWallet();
+
+    addIncome(wallet, categoryName, amount);
+  }
+
   public void addExpense(String categoryName, BigDecimal amount, BigDecimal limitAmount) {
-    Wallet wallet = searchCurrentUserData.getWallet();
+    Wallet wallet = walletService.getCurrentWallet();
     if (wallet.getBudget().getLimitAmount() != null
         && wallet
                 .getBudget()
@@ -50,13 +60,26 @@ public class TransactionService {
     Transaction transaction = new Transaction(wallet, category, amount, TransactionType.EXPENSE);
 
     categoryService.addExpenseCategory(category, categoryName, amount);
-    walletService.decreaseBalance(amount);
+    walletService.decreaseBalance(wallet, amount);
 
     transactionRepository.save(transaction);
   }
 
   public List<Transaction> getAllTransactions() {
-    UUID walletId = searchCurrentUserData.getWallet().getWalletId();
+    UUID walletId = walletService.getCurrentWallet().getWalletId();
     return transactionRepository.findByWalletWalletId(walletId);
+  }
+
+  public String addTransfer(String loginRecipientUser, BigDecimal amount) {
+    if (!walletService.isExistWallet(loginRecipientUser)) {
+      throw new IllegalStateException("Пользователь не найден");
+    }
+    if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalStateException("Введена некоректная сумма");
+    }
+    addExpense(this.categoryNameTransfer, amount, null);
+    addIncomeTransfer(this.categoryNameTransfer, amount, loginRecipientUser);
+
+    return "Перевод выполнен успешно!";
   }
 }
