@@ -93,6 +93,17 @@ public class CategoryService {
     return categoryRepository.findAllByWalletWalletIdAndCategoryType(walletId, type);
   }
 
+  public void updateLimitAmount(UUID walletId, String categoryName, BigDecimal newLimitAmount) {
+    Category category = getCategory(walletId, categoryName, TransactionType.EXPENSE);
+
+    BudgetCategoryExpense budget = (BudgetCategoryExpense) category.getBudget();
+    if (newLimitAmount.compareTo(budget.getExpense()) < 0) {
+      throw new IllegalStateException("Новый лимит не может быть меньше расходов по категории");
+    }
+    budget.setLimitAmount(newLimitAmount);
+    categoryRepository.save(category);
+  }
+
   private Category getCategory(UUID walletId, String categoryName, TransactionType type) {
     return categoryRepository
         .findByWalletWalletIdAndCategoryNameAndCategoryType(walletId, categoryName, type)

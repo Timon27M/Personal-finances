@@ -1,7 +1,8 @@
 package com.example.personalfinances.controllers;
 
+import com.example.personalfinances.dto.DefaultSuccessResponse;
+import com.example.personalfinances.dto.wallet.requests.UpdateCategoryLimitAmount;
 import com.example.personalfinances.dto.wallet.requests.UpdateLimitRequest;
-import com.example.personalfinances.dto.wallet.responses.UpdateLimitResponse;
 import com.example.personalfinances.dto.wallet.responses.WalletInfoResponse;
 import com.example.personalfinances.entity.Category;
 import com.example.personalfinances.entity.enums.TransactionType;
@@ -40,10 +41,21 @@ public class WalletController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/limit-amount")
-  public ResponseEntity<UpdateLimitResponse> limitAmount(@RequestBody UpdateLimitRequest request) {
+  @PostMapping("/wallet-limit-amount")
+  public ResponseEntity<DefaultSuccessResponse> limitAmount(
+      @RequestBody UpdateLimitRequest request) {
     String message = walletService.addLimitAmount(request.getLimitAmount());
 
-    return ResponseEntity.ok().body(new UpdateLimitResponse(message));
+    return ResponseEntity.ok().body(new DefaultSuccessResponse(message));
+  }
+
+  @PostMapping("/category-limit-amount")
+  public ResponseEntity<DefaultSuccessResponse> limitAmountCategory(
+      @RequestBody UpdateCategoryLimitAmount request) {
+    String message =
+        walletService.updateCategoryLimitAmount(
+            request.getCategoryName(), request.getNewLimitAmount());
+
+    return ResponseEntity.ok().body(new DefaultSuccessResponse(message));
   }
 }
