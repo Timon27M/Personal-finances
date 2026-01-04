@@ -73,4 +73,11 @@ public class WalletService {
     searchCurrentUserData.getWallet().getBudget().setLimitAmount(limit);
     return "Лимит кошелька обновлен!";
   }
+
+  public String updateCategoryLimitAmount(String categoryName, BigDecimal newLimit) {
+    UUID walletId = searchCurrentUserData.getWallet().getWalletId();
+
+    categoryService.updateLimitAmount(walletId, categoryName, newLimit);
+    return "Лимит " + categoryName + " обновлен!";
+  }
 }
