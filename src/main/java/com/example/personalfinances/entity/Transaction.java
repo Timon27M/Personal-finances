@@ -14,6 +14,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "transations")
 public class Transaction {
+  @Getter
   @Id
   @UuidGenerator(style = UuidGenerator.Style.RANDOM)
   @JdbcTypeCode(SqlTypes.UUID)
@@ -26,14 +27,17 @@ public class Transaction {
   @JoinColumn(name = "wallet_id", nullable = false)
   private Wallet wallet;
 
+  @Getter
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = true)
   private Category category;
 
+  @Getter
   @Column(name = "amount", nullable = false)
   private BigDecimal amount;
 
+  @Getter
   @Enumerated(EnumType.STRING)
   @Column(name = "transaction_type", nullable = false, length = 20)
   private TransactionType type;
