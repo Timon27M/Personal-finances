@@ -20,9 +20,7 @@ public class WalletService {
   private final WalletRepository walletRepository;
   private final CategoryService categoryService;
 
-  public void increaseBalance(BigDecimal currentAmount) {
-    Wallet wallet = searchCurrentUserData.getWallet();
-
+  public void increaseBalance(Wallet wallet, BigDecimal currentAmount) {
     if (currentAmount == null || currentAmount.compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalArgumentException("amount не может быть пустым");
     }
@@ -32,8 +30,7 @@ public class WalletService {
     walletRepository.save(wallet);
   }
 
-  public void decreaseBalance(BigDecimal amount) {
-    Wallet wallet = searchCurrentUserData.getWallet();
+  public void decreaseBalance(Wallet wallet, BigDecimal amount) {
     if (wallet.getBalance().compareTo(amount) < 0
         || wallet.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalStateException("Не достаточно средств");
@@ -49,35 +46,50 @@ public class WalletService {
   }
 
   public BigDecimal getExpenseWallet() {
-    Wallet wallet = searchCurrentUserData.getWallet();
+    Wallet wallet = getCurrentWallet();
     return wallet.getBudget().getExpense();
   }
 
   public BigDecimal getIncomeWallet() {
-    Wallet wallet = searchCurrentUserData.getWallet();
+    Wallet wallet = getCurrentWallet();
     return wallet.getBudget().getIncome();
   }
 
   public BigDecimal getBalance() {
-    return searchCurrentUserData.getWallet().getBalance();
+    return getCurrentWallet().getBalance();
   }
 
   public List<Category> getCategoriesByType(TransactionType type) {
-    Wallet wallet = searchCurrentUserData.getWallet();
+    Wallet wallet = getCurrentWallet();
     UUID walletId = wallet.getWalletId();
 
     return categoryService.getCategoriesByWalletAndType(walletId, type);
   }
 
   public String addLimitAmount(BigDecimal limit) {
-    searchCurrentUserData.getWallet().getBudget().setLimitAmount(limit);
+    getCurrentWallet().getBudget().setLimitAmount(limit);
     return "Лимит кошелька обновлен!";
   }
 
   public String updateCategoryLimitAmount(String categoryName, BigDecimal newLimit) {
-    UUID walletId = searchCurrentUserData.getWallet().getWalletId();
+    UUID walletId = getCurrentWallet().getWalletId();
 
     categoryService.updateLimitAmount(walletId, categoryName, newLimit);
     return "Лимит " + categoryName + " обновлен!";
+  }
+
+  public Wallet getWalletByLogin(String login) {
+    if (!walletRepository.existsByUserLogin(login)) {
+      throw new IllegalStateException("Пользователь не найден");
+    }
+    return walletRepository.findByUserLogin(login);
+  }
+
+  public Wallet getCurrentWallet() {
+    return searchCurrentUserData.getWallet();
+  }
+
+  public boolean isExistWallet(String login) {
+    return walletRepository.existsByUserLogin(login);
   }
 }

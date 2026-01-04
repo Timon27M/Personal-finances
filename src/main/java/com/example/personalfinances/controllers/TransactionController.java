@@ -3,6 +3,8 @@ package com.example.personalfinances.controllers;
 import com.example.personalfinances.dto.DefaultSuccessResponse;
 import com.example.personalfinances.dto.transaction.requests.AddExpenseRequest;
 import com.example.personalfinances.dto.transaction.requests.AddIncomeRequest;
+// import com.example.personalfinances.dto.transaction.requests.TransferAmountRequest;
+import com.example.personalfinances.dto.transaction.requests.TransferAmountRequest;
 import com.example.personalfinances.dto.transaction.responses.GetAllTransactionResponse;
 import com.example.personalfinances.entity.Transaction;
 import com.example.personalfinances.mapper.TransactionMapper;
@@ -21,7 +23,7 @@ public class TransactionController {
 
   @PostMapping("/add-income")
   public ResponseEntity<DefaultSuccessResponse> addIncome(@RequestBody AddIncomeRequest request) {
-    transactionService.addIncome(request.getCategoryName(), request.getAmount());
+    transactionService.addIncomeCurrentWallet(request.getCategoryName(), request.getAmount());
 
     return ResponseEntity.ok().body(new DefaultSuccessResponse("Операция прошла успешно!"));
   }
@@ -42,5 +44,14 @@ public class TransactionController {
         transactionMapper.toGetAllTransactionResponse(transactions);
 
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/transfer")
+  public ResponseEntity<DefaultSuccessResponse> transferAmount(
+      @RequestBody TransferAmountRequest request) {
+    String message =
+        transactionService.addTransfer(request.getLoginRecipient(), request.getAmount());
+
+    return ResponseEntity.ok(new DefaultSuccessResponse(message));
   }
 }
