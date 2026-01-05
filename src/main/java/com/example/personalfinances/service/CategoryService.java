@@ -49,7 +49,13 @@ public class CategoryService {
           && limitAmount.compareTo(currentAmount) < 0) {
         throw new IllegalStateException("limit не может быть меньше amount");
       }
-      category = new Category(wallet, categoryName, type);
+
+      if (type == TransactionType.EXPENSE && limitAmount != null) {
+        category = new Category(wallet, categoryName, type, limitAmount);
+      } else {
+
+        category = new Category(wallet, categoryName, type);
+      }
     }
 
     return categoryRepository.save(category);
@@ -102,6 +108,17 @@ public class CategoryService {
     }
     budget.setLimitAmount(newLimitAmount);
     categoryRepository.save(category);
+  }
+
+  public String deleteCategory(UUID walletId, String categoryName, TransactionType type) {
+    if (!categoryRepository.existsByWalletWalletIdAndCategoryNameAndCategoryType(
+        walletId, categoryName, type)) {
+      throw new IllegalStateException("Категория не найдена!");
+    }
+    categoryRepository.deleteByWalletWalletIdAndCategoryNameAndCategoryType(
+        walletId, categoryName, type);
+
+    return "Категорию удалена!";
   }
 
   private Category getCategory(UUID walletId, String categoryName, TransactionType type) {

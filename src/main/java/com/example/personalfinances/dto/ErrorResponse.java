@@ -3,6 +3,7 @@ package com.example.personalfinances.dto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ErrorResponse {
   private int status;
-  private String message;
+  @Getter private String message;
   private LocalDateTime timestamp;
 
   public ErrorResponse(int status, String message) {

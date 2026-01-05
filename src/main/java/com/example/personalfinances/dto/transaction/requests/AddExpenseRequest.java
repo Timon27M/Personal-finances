@@ -12,5 +12,5 @@ public class AddExpenseRequest {
   private final BigDecimal amount;
 
   @JsonProperty(required = false)
-  private BigDecimal limitAmount; // теперь опциональный
+  private BigDecimal limitAmount;
 }

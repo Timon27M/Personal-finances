@@ -1,6 +1,7 @@
 package com.example.personalfinances.controllers;
 
 import com.example.personalfinances.dto.DefaultSuccessResponse;
+import com.example.personalfinances.dto.wallet.requests.DeleteCategoryRequest;
 import com.example.personalfinances.dto.wallet.requests.UpdateCategoryLimitAmount;
 import com.example.personalfinances.dto.wallet.requests.UpdateLimitRequest;
 import com.example.personalfinances.dto.wallet.responses.WalletInfoResponse;
@@ -41,7 +42,7 @@ public class WalletController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/limit-amount/wallet")
+  @PostMapping("/limit-amount")
   public ResponseEntity<DefaultSuccessResponse> limitAmount(
       @RequestBody UpdateLimitRequest request) {
     String message = walletService.addLimitAmount(request.getLimitAmount());
@@ -57,5 +58,14 @@ public class WalletController {
             request.getCategoryName(), request.getNewLimitAmount());
 
     return ResponseEntity.ok().body(new DefaultSuccessResponse(message));
+  }
+
+  @DeleteMapping("/category")
+  public ResponseEntity<DefaultSuccessResponse> deleteCategory(
+      @RequestBody DeleteCategoryRequest request) {
+    String responseMessage =
+        walletService.deleteCategoryFromWallet(request.getCategoryName(), request.getType());
+
+    return ResponseEntity.ok().body(new DefaultSuccessResponse(responseMessage));
   }
 }
