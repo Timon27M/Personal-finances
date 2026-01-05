@@ -22,7 +22,8 @@ public class TransactionController {
   private final TransactionMapper transactionMapper;
 
   @PostMapping("/add-income")
-  public ResponseEntity<DefaultSuccessResponse> addIncome(@RequestBody AddIncomeRequest request) {
+  public ResponseEntity<?> addIncome(@RequestBody AddIncomeRequest request) {
+
     transactionService.addIncomeCurrentWallet(request.getCategoryName(), request.getAmount());
 
     return ResponseEntity.ok().body(new DefaultSuccessResponse("Операция прошла успешно!"));

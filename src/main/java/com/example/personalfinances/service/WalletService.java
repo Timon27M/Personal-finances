@@ -66,8 +66,14 @@ public class WalletService {
     return categoryService.getCategoriesByWalletAndType(walletId, type);
   }
 
-  public String addLimitAmount(BigDecimal limit) {
-    getCurrentWallet().getBudget().setLimitAmount(limit);
+  public String addLimitAmount(BigDecimal newLimit) {
+    BigDecimal currentExpense = getCurrentWallet().getBudget().getExpense();
+
+    if (newLimit.compareTo(currentExpense) < 0) {
+      throw new IllegalStateException("Новый лимит не может быть меньше текущих расходов");
+    }
+
+    getCurrentWallet().getBudget().setLimitAmount(newLimit);
     return "Лимит кошелька обновлен!";
   }
 
@@ -76,6 +82,11 @@ public class WalletService {
 
     categoryService.updateLimitAmount(walletId, categoryName, newLimit);
     return "Лимит " + categoryName + " обновлен!";
+  }
+
+  public String deleteCategoryFromWallet(String categoryName, TransactionType type) {
+    UUID walletId = getCurrentWallet().getWalletId();
+    return categoryService.deleteCategory(walletId, categoryName, type);
   }
 
   public Wallet getWalletByLogin(String login) {

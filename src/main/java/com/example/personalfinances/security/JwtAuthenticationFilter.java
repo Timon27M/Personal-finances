@@ -14,12 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
   public JwtAuthenticationFilter(final JwtService jwtService) {
     this.jwtService = jwtService;
@@ -42,10 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception e) {
+          request.setAttribute("authException", new ServletException("Ошибка аутентификации: "));
           throw new ServletException("Невозможно установить аутентификацию пользователя: ", e);
         }
       } else {
-        throw new ServletException("Недействительный JWT-токен");
+        request.setAttribute("authException", new ServletException("Ошибка аутентификации: "));
+        throw new ServletException("Невозможно установить аутентификацию пользователя: ");
       }
     }
     filterChain.doFilter(request, response);

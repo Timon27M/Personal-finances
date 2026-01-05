@@ -1,5 +1,6 @@
 package com.example.personalfinances.config;
 
+import com.example.personalfinances.security.JwtAuthenticationEntryPoint;
 import com.example.personalfinances.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +17,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityBeansConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-  public SecurityBeansConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+  public SecurityBeansConfig(
+      JwtAuthenticationFilter jwtAuthenticationFilter,
+      JwtAuthenticationEntryPoint authenticationEntryPoint) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.authenticationEntryPoint = authenticationEntryPoint;
   }
 
   @Bean
@@ -32,6 +37,8 @@ public class SecurityBeansConfig {
         .authorizeHttpRequests(
             auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(
+            exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
