@@ -1,8 +1,11 @@
 package com.example.personalfinances.dto.auth.requests;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class LoginRequest {
-  private String login;
-  private String password;
+  private final String login;
+  private final String password;
 
   public String getLogin() {
     return login;
