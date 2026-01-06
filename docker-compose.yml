@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: finance_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres} # из .env
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -21,7 +21,7 @@ services:
       retries: 5
       start_period: 30s
     env_file:
-      - .env # подключаем .env файл
+      - .env
 
   app:
     build:
@@ -32,12 +32,12 @@ services:
       # Переменные окружения для Spring Boot
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/finance_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-postgres}
+      SPRING_DATASOURCE_PASSWORD: postgres
       SERVER_PORT: 8080
       # Дополнительные настройки
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-      TZ: "Europe/Moscow" # установите свою временную зону
+      TZ: "Europe/Moscow"
     ports:
       - "${SERVER_PORT:-8080}:8080"
     depends_on:
@@ -55,8 +55,8 @@ services:
     image: dpage/pgadmin4:latest
     container_name: finance-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@finance.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: admin@finance.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     depends_on:
