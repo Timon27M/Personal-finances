@@ -13,10 +13,12 @@
 ## 👉 Запуск:
 1. Через Maven сборку:
 - git clone https://github.com/Timon27M/Personal-finances.git
+- В postgres (pgAdmin) создать БД с название finance_db
 - mvn clean package
 - java -jar .\target\main-0.0.1-SNAPSHOT.jar
 2. Через docker сборку
 - git clone https://github.com/Timon27M/Personal-finances.git
+- В postgres (pgAdmin) создать БД с название finance_db
 - docker-compose up --build
 3. Напрямую через ide
 
